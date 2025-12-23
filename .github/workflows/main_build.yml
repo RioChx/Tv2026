@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository content
+      # STEP 1: This MUST come first to fix your "No file matched" error
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup Java 17 (Required for modern Android builds)
+      # STEP 2: Setup Java (Now it will find your gradle files to cache them)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -22,15 +22,15 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      # 3. Make the Gradle wrapper executable
+      # STEP 3: Grant permissions
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      # 4. Build the Debug APK
+      # STEP 4: Build the APK
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-      # 5. Upload the APK so you can download it
+      # STEP 5: Save the APK so you can download it
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
