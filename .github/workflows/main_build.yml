@@ -2,19 +2,17 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ] # Runs every time you push to the main branch
-  workflow_dispatch:      # Allows you to run this manually from the "Actions" tab
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # STEP 1: This MUST come first to fix your "No file matched" error
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # STEP 2: Setup Java (Now it will find your gradle files to cache them)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -22,17 +20,30 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      # STEP 3: Grant permissions
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
+      - name: Find Gradlew and Build
+        run: |
+          # This command finds the path to gradlew wherever it is hiding
+          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
+          
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "ERROR: gradlew file not found! Please ensure you uploaded the project files."
+            exit 1
+          fi
+          
+          echo "Found gradlew at: $GRADLEW_PATH"
+          
+          # Give permission to the file
+          chmod +x "$GRADLEW_PATH"
+          
+          # Change directory to where gradlew is located
+          cd "$(dirname "$GRADLEW_PATH")"
+          
+          # Run the build
+          ./gradlew assembleDebug
 
-      # STEP 4: Build the APK
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      # STEP 5: Save the APK so you can download it
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          path: app/build/outputs/apk/debug/*.apk
+          # The double asterisk ** ensures it finds the APK regardless of folder depth
+          path: "**/build/outputs/apk/debug/*.apk"
