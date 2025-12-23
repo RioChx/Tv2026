@@ -8,41 +8,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Stop the job if it takes longer than 15 minutes to save your minutes
-    timeout-minutes: 15 
 
     steps:
-      - name: 1. Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: 2. Set up JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          # We remove the cache temporarily to ensure a "fresh" clean start
-          # cache: 'gradle' 
+          cache: 'gradle'
 
-      - name: 3. Locate and Build (The "All-In-One" Fix)
+      - name: Emergency Gradle Wrapper Fix
         run: |
-          # Search for gradlew
-          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
-          
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "STILL MISSING: I cannot see your gradlew file. Please check your GitHub file list."
-            exit 1
+          if [ ! -f "gradlew" ]; then
+            echo "gradlew missing! Generating a temporary wrapper..."
+            gradle wrapper
           fi
-          
-          PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
-          chmod +x "$GRADLEW_PATH"
-          cd "$PROJECT_ROOT"
-          
-          # Use --no-daemon to prevent the process from hanging in the background
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          chmod +x gradlew
 
-      - name: 4. Upload APK
-        if: success()
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-widget-apk
-          path: "**/build/outputs/apk/debug/*.apk"
+          name: futuristic-widget-apk
+          path: app/build/outputs/apk/debug/*.apk
