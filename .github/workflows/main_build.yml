@@ -10,40 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: 1. Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensures all files and history are pulled
 
-      - name: Set up JDK 17
+      - name: 2. Reveal File Structure (Debug)
+        run: |
+          echo "Listing all files in the repository to find the project:"
+          find . -maxdepth 3 -not -path '*/.*'
+
+      - name: 3. Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Global Fix and Build
+      - name: 4. Global Build Execution
         run: |
-          # 1. Locate the gradlew file anywhere in the repo
+          # Locate gradlew regardless of folder structure
           GRADLEW_PATH=$(find . -name gradlew | head -n 1)
           
           if [ -z "$GRADLEW_PATH" ]; then
-            echo "CRITICAL ERROR: No Android project found. Check your file upload."
+            echo "CRITICAL ERROR: 'gradlew' not found. Your project files are missing from GitHub."
             exit 1
           fi
           
-          # 2. Get the directory containing the project
           PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
-          echo "Project found in: $PROJECT_ROOT"
+          echo "Project detected in: $PROJECT_ROOT"
           
-          # 3. Apply executable permissions to the wrapper
           chmod +x "$GRADLEW_PATH"
-          
-          # 4. Navigate and Build
           cd "$PROJECT_ROOT"
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: 5. Upload All Generated APKs
         uses: actions/upload-artifact@v4
         with:
           name: futuristic-widget-apk
-          # Finds any .apk file generated anywhere in the project folders
           path: "**/build/outputs/apk/debug/*.apk"
