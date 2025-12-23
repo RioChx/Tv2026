@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.CyberWidget" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#06b6d4</item>
+    </style>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#020617</item>
+        <item name="postSplashScreenTheme">@style/Theme.CyberWidget</item>
+    </style>
+</resources>
