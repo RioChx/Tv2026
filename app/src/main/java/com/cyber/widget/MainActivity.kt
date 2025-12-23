@@ -14,13 +14,12 @@ class MainActivity : AppCompatActivity() {
 
         val txtInfo = findViewById<TextView>(R.id.txtBuildInfo)
         
-        // Load data from assets
         try {
             val jsonString = assets.open("sample_data.json").bufferedReader().use { it.readText() }
             val json = JSONObject(jsonString)
-            txtInfo.text = "Build ID: ${json.getString("build_id")}\nKernel: ${json.getString("kernel")}"
+            txtInfo.text = "System ID: ${json.getString("build_id")}\nStatus: ${json.getString("stability")}\nCore: ${json.getString("kernel")}"
         } catch (e: Exception) {
-            txtInfo.text = "Error loading system metadata"
+            txtInfo.text = "Error: System Metadata Inaccessible"
         }
     }
 }

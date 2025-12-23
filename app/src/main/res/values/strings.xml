@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">CyberWidget Art</string>
     <string name="welcome_message">Neural System Active</string>
-    <string name="btn_about">View SDK Details</string>
-    <string name="title_about">About Project</string>
 </resources>
