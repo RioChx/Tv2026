@@ -20,30 +20,30 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Find Gradlew and Build
+      - name: Global Fix and Build
         run: |
-          # This command finds the path to gradlew wherever it is hiding
+          # 1. Locate the gradlew file anywhere in the repo
           GRADLEW_PATH=$(find . -name gradlew | head -n 1)
           
           if [ -z "$GRADLEW_PATH" ]; then
-            echo "ERROR: gradlew file not found! Please ensure you uploaded the project files."
+            echo "CRITICAL ERROR: No Android project found. Check your file upload."
             exit 1
           fi
           
-          echo "Found gradlew at: $GRADLEW_PATH"
+          # 2. Get the directory containing the project
+          PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
+          echo "Project found in: $PROJECT_ROOT"
           
-          # Give permission to the file
+          # 3. Apply executable permissions to the wrapper
           chmod +x "$GRADLEW_PATH"
           
-          # Change directory to where gradlew is located
-          cd "$(dirname "$GRADLEW_PATH")"
-          
-          # Run the build
-          ./gradlew assembleDebug
+          # 4. Navigate and Build
+          cd "$PROJECT_ROOT"
+          ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-apk
-          # The double asterisk ** ensures it finds the APK regardless of folder depth
+          name: futuristic-widget-apk
+          # Finds any .apk file generated anywhere in the project folders
           path: "**/build/outputs/apk/debug/*.apk"
