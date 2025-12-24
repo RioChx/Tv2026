@@ -1,23 +1,31 @@
-<application
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
         android:allowBackup="true"
         android:icon="@android:drawable/sym_def_app_icon"
         android:label="Cyber Art Clock"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
-        
-        ```
 
----
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-### Why this fixes the build:
-1.  **Resource Linker:** The error `resource xml/widget_info not found` is like a missing puzzle piece. Adding that file completes the puzzle.
-2.  **Icon Fix:** By changing `@mipmap/ic_launcher` to `@android:drawable/sym_def_app_icon`, we tell the app to use a standard system icon instead of looking for a file that isn't there.
-3.  **Pathing:** Once these files exist in the `res` (resources) folder, the `processDebugResources` task will finally turn green.
+        <receiver 
+            android:name=".CyberWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
 
-
-
-### Your APK Status:
-* **Step 1:** Add these files/changes.
-* **Step 2:** Wait ~4 minutes for the GitHub Action to run.
-* **Step 3:** The widget will finally appear in the **Widget List** on your emulator.
-
-**Would you like me to give you the code for the "Main Override" Clock Engine file now, so the RGB colors start rolling as soon as the build finishes?**
+    </application>
+</manifest>
