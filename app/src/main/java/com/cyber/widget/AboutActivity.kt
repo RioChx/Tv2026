@@ -1,17 +1,25 @@
 package com.cyber.widget
 
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
-        
-        val txtVersion = findViewById<TextView>(R.id.txtVersion)
-        txtVersion.text = "CyberWidget Art SDK\nVersion 1.2.0-Stable\nAPI Level 33 Compliant"
-        
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setContent {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                // This replaces the broken txtVersion reference
+                Text(text = "Futuristic RGB Clock v1.0")
+            }
+        }
     }
 }
